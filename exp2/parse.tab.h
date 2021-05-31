@@ -34,8 +34,8 @@
 /* Undocumented macros, especially those whose name start with YY_,
    are private implementation details.  Do not rely on them.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_PARSE_TAB_H_INCLUDED
+# define YY_YY_PARSE_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
@@ -63,19 +63,6 @@ extern int yydebug;
     FLOAT16 = 269
   };
 #endif
-/* Tokens.  */
-#define WHILE 258
-#define IF 259
-#define THEN 260
-#define ELSE 261
-#define DO 262
-#define IDN 263
-#define INT8 264
-#define INT10 265
-#define INT16 266
-#define FLOAT8 267
-#define FLOAT10 268
-#define FLOAT16 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -88,7 +75,7 @@ union YYSTYPE
     char *strval;
     struct astNode *node;
 
-#line 92 "y.tab.h"
+#line 79 "parse.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -115,4 +102,4 @@ extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSE_TAB_H_INCLUDED  */

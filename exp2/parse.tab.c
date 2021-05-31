@@ -78,7 +78,7 @@ void yyerror(char *s);
 int yylex();
 struct astNode *root;
 
-#line 82 "y.tab.c"
+#line 82 "parse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -111,8 +111,8 @@ struct astNode *root;
 
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_PARSE_TAB_H_INCLUDED
+# define YY_YY_PARSE_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
@@ -140,19 +140,6 @@ extern int yydebug;
     FLOAT16 = 269
   };
 #endif
-/* Tokens.  */
-#define WHILE 258
-#define IF 259
-#define THEN 260
-#define ELSE 261
-#define DO 262
-#define IDN 263
-#define INT8 264
-#define INT10 265
-#define INT16 266
-#define FLOAT8 267
-#define FLOAT10 268
-#define FLOAT16 269
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -165,7 +152,7 @@ union YYSTYPE
     char *strval;
     struct astNode *node;
 
-#line 169 "y.tab.c"
+#line 156 "parse.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -192,7 +179,7 @@ extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSE_TAB_H_INCLUDED  */
 
 
 
@@ -1473,167 +1460,167 @@ yyreduce:
   case 2:
 #line 52 "parse.y"
                         {(yyval.node) = createAstNode(1, NULL, (yyvsp[0].node), NULL); root = (yyval.node);}
-#line 1477 "y.tab.c"
+#line 1464 "parse.tab.c"
     break;
 
   case 3:
 #line 53 "parse.y"
                         {(yyval.node) = createAstNode(2, (yyvsp[-1].node), NULL, (yyvsp[0].node)); root = (yyval.node);}
-#line 1483 "y.tab.c"
+#line 1470 "parse.tab.c"
     break;
 
   case 4:
 #line 56 "parse.y"
                         {(yyval.node) = createAstNode(3, NULL, (yyvsp[-1].node), NULL);}
-#line 1489 "y.tab.c"
+#line 1476 "parse.tab.c"
     break;
 
   case 5:
 #line 59 "parse.y"
                                 {(yyval.node) = createAstNodeForIdn(4, (yyvsp[-2].strval), NULL, (yyvsp[0].node), NULL);}
-#line 1495 "y.tab.c"
+#line 1482 "parse.tab.c"
     break;
 
   case 6:
 #line 60 "parse.y"
                                 {(yyval.node) = createAstNode(5, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1501 "y.tab.c"
+#line 1488 "parse.tab.c"
     break;
 
   case 7:
 #line 61 "parse.y"
                                 {(yyval.node) = createAstNode(6, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1507 "y.tab.c"
+#line 1494 "parse.tab.c"
     break;
 
   case 8:
 #line 62 "parse.y"
                                 {(yyval.node) = createAstNode(7, NULL, (yyvsp[-1].node), NULL);}
-#line 1513 "y.tab.c"
+#line 1500 "parse.tab.c"
     break;
 
   case 9:
 #line 65 "parse.y"
                         {(yyval.node) = createAstNode(8, NULL, (yyvsp[0].node), NULL);}
-#line 1519 "y.tab.c"
+#line 1506 "parse.tab.c"
     break;
 
   case 10:
 #line 66 "parse.y"
                         {(yyval.node) = createAstNode(9, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1525 "y.tab.c"
+#line 1512 "parse.tab.c"
     break;
 
   case 11:
 #line 69 "parse.y"
                         {(yyval.node) = createAstNode(10, (yyvsp[-1].node), NULL, (yyvsp[0].node));}
-#line 1531 "y.tab.c"
+#line 1518 "parse.tab.c"
     break;
 
   case 12:
 #line 72 "parse.y"
                         {(yyval.node) = createAstNode(11, NULL, (yyvsp[0].node), NULL);}
-#line 1537 "y.tab.c"
+#line 1524 "parse.tab.c"
     break;
 
   case 13:
 #line 73 "parse.y"
                         {(yyval.node) = createAstNode(12, NULL, (yyvsp[0].node), NULL);}
-#line 1543 "y.tab.c"
+#line 1530 "parse.tab.c"
     break;
 
   case 14:
 #line 74 "parse.y"
                         {(yyval.node) = createAstNode(13, NULL, (yyvsp[0].node), NULL);}
-#line 1549 "y.tab.c"
+#line 1536 "parse.tab.c"
     break;
 
   case 15:
 #line 77 "parse.y"
                         {(yyval.node) = createAstNode(14, NULL, (yyvsp[0].node), NULL);}
-#line 1555 "y.tab.c"
+#line 1542 "parse.tab.c"
     break;
 
   case 16:
 #line 78 "parse.y"
                         {(yyval.node) = createAstNode(15, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1561 "y.tab.c"
+#line 1548 "parse.tab.c"
     break;
 
   case 17:
 #line 79 "parse.y"
                         {(yyval.node) = createAstNode(16, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1567 "y.tab.c"
+#line 1554 "parse.tab.c"
     break;
 
   case 18:
 #line 82 "parse.y"
                         {(yyval.node) = createAstNode(17, NULL, (yyvsp[0].node), NULL);}
-#line 1573 "y.tab.c"
+#line 1560 "parse.tab.c"
     break;
 
   case 19:
 #line 83 "parse.y"
                         {(yyval.node) = createAstNode(18, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1579 "y.tab.c"
+#line 1566 "parse.tab.c"
     break;
 
   case 20:
 #line 84 "parse.y"
                         {(yyval.node) = createAstNode(19, (yyvsp[-2].node), NULL, (yyvsp[0].node));}
-#line 1585 "y.tab.c"
+#line 1572 "parse.tab.c"
     break;
 
   case 21:
 #line 87 "parse.y"
                         {(yyval.node) = createAstNode(20, NULL, (yyvsp[-1].node), NULL);}
-#line 1591 "y.tab.c"
+#line 1578 "parse.tab.c"
     break;
 
   case 22:
 #line 88 "parse.y"
                         {(yyval.node) = createIdnNode(21, (yyvsp[0].strval));}
-#line 1597 "y.tab.c"
+#line 1584 "parse.tab.c"
     break;
 
   case 23:
 #line 89 "parse.y"
                         {(yyval.node) = createNumNode(22, (yyvsp[0].intval));}
-#line 1603 "y.tab.c"
+#line 1590 "parse.tab.c"
     break;
 
   case 24:
 #line 90 "parse.y"
                         {(yyval.node) = createNumNode(23, (yyvsp[0].intval));}
-#line 1609 "y.tab.c"
+#line 1596 "parse.tab.c"
     break;
 
   case 25:
 #line 91 "parse.y"
                         {(yyval.node) = createNumNode(24, (yyvsp[0].intval));}
-#line 1615 "y.tab.c"
+#line 1602 "parse.tab.c"
     break;
 
   case 26:
 #line 92 "parse.y"
                         {(yyval.node) = createNumNode(25, (yyvsp[0].doubleval));}
-#line 1621 "y.tab.c"
+#line 1608 "parse.tab.c"
     break;
 
   case 27:
 #line 93 "parse.y"
                         {(yyval.node) = createNumNode(26, (yyvsp[0].doubleval));}
-#line 1627 "y.tab.c"
+#line 1614 "parse.tab.c"
     break;
 
   case 28:
 #line 94 "parse.y"
                         {(yyval.node) = createNumNode(27, (yyvsp[0].doubleval));}
-#line 1633 "y.tab.c"
+#line 1620 "parse.tab.c"
     break;
 
 
-#line 1637 "y.tab.c"
+#line 1624 "parse.tab.c"
 
       default: break;
     }
