@@ -1,12 +1,34 @@
-struct ast_node
+#include "backpatch.h"
+
+typedef struct ast_node
 {
     int pattern;
+
     double num;
     char idn[20];
+
     struct ast_node *l;
     struct ast_node *m;
     struct ast_node *r;
-};
+
+    list_node *true_list;
+    list_node *false_list;
+    list_node *next_list;
+
+    /**
+     * > | < | =
+     */
+    char relop;
+
+    /**
+     * 0: IDN
+     * 1: NUM
+     * 5: T
+     * 6: QUAD
+     * 10: LIST
+     */
+    int type;
+} ast_node;
 
 char *print_production(int type)
 {
@@ -102,10 +124,10 @@ char *print_production(int type)
     return s;
 }
 
-struct astNode *create_num_node(int pattern, double num)
+ast_node *create_num_node(int pattern, double num)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    ast_node *res;
+    res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     res->num = num;
     memset(res->idn, 0, sizeof(res->idn));
@@ -115,10 +137,10 @@ struct astNode *create_num_node(int pattern, double num)
     return res;
 }
 
-struct ast_node *create_IDN_node(int pattern, char *idn)
+ast_node *create_IDN_node(int pattern, char *idn)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    ast_node *res;
+    res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     strcpy(res->idn, idn);
     res->l = NULL;
@@ -127,10 +149,10 @@ struct ast_node *create_IDN_node(int pattern, char *idn)
     return res;
 }
 
-struct ast_node *create_ast_node(int pattern, struct ast_node *l, struct ast_node *m, struct ast_node *r)
+ast_node *create_ast_node(int pattern, ast_node *l, ast_node *m, ast_node *r)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    ast_node *res;
+    res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     res->num = -1;
     memset(res->idn, 0, sizeof(res->idn));
@@ -140,10 +162,10 @@ struct ast_node *create_ast_node(int pattern, struct ast_node *l, struct ast_nod
     return res;
 }
 
-struct ast_node *create_ast_node_for_IDN(int pattern, char *idn, struct ast_node *l, struct ast_node *m, struct ast_node *r)
+ast_node *create_ast_node_for_IDN(int pattern, char *idn, ast_node *l, ast_node *m, ast_node *r)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    ast_node *res;
+    res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     res->num = -1;
     strcpy(res->idn, idn);
@@ -153,7 +175,7 @@ struct ast_node *create_ast_node_for_IDN(int pattern, char *idn, struct ast_node
     return res;
 }
 
-void print_grammar_tree(struct ast_node *node, FILE *file)
+void print_grammar_tree(ast_node *node, FILE *file)
 {
     if (node == NULL)
     {
