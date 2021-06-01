@@ -1,11 +1,18 @@
 #include "backpatch.h"
 
+#define TYPE_IDN 0
+#define TYPE_NUM 1
+#define TYPE_TEMP 5
+#define TYPE_TAC 6
+#define TYPE_LIST 10
+
 typedef struct ast_node
 {
     int pattern;
 
     double num;
     char idn[20];
+    int temp;
 
     struct ast_node *l;
     struct ast_node *m;
@@ -20,21 +27,16 @@ typedef struct ast_node
      */
     char relop;
 
-    /**
-     * 0: IDN
-     * 1: NUM
-     * 5: T
-     * 6: QUAD
-     * 10: LIST
-     */
+    // see defination of "parse.h"
     int type;
+
 } ast_node;
 
-char *print_production(int type)
+char *print_product(int product_idx)
 {
     char *s;
     s = (char *)malloc(30);
-    switch (type)
+    switch (product_idx)
     {
     case 1:
         strcpy(s, "P -> L");
@@ -181,7 +183,7 @@ void print_grammar_tree(ast_node *node, FILE *file)
     {
         return;
     }
-    char *production = print_production(node->pattern);
+    char *production = print_product(node->pattern);
     fprintf(file, "%s", production);
     if (node->pattern >= 22 && node->pattern <= 24)
         fprintf(file, "%d", (int)node->num);
