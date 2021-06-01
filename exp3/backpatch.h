@@ -8,7 +8,7 @@ typedef struct list_node
     int tac_index; // the line number of a tac_index
 } list_node;
 
-struct list_node *makelist(int tac_index)
+list_node *makelist(int tac_index)
 {
     struct list_node *node;
     node = (list_node *)malloc(sizeof(list_node));
@@ -16,7 +16,7 @@ struct list_node *makelist(int tac_index)
     return node;
 }
 
-struct list_node *merge(list_node *l1, list_node *l2)
+list_node *merge(list_node *l1, list_node *l2)
 {
     struct list_node *l = (list_node *)malloc(sizeof(list_node));
     struct list_node *now = l;
