@@ -133,6 +133,7 @@ ast_node *create_num_node(int pattern, double num)
     res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     res->num = num;
+    res->type = TYPE_NUM;
     memset(res->idn, 0, sizeof(res->idn));
     res->l = NULL;
     res->m = NULL;
@@ -146,6 +147,7 @@ ast_node *create_IDN_node(int pattern, char *idn)
     res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
     strcpy(res->idn, idn);
+    res->type = TYPE_IDN;
     res->l = NULL;
     res->m = NULL;
     res->r = NULL;
@@ -159,6 +161,14 @@ ast_node *create_ast_node(int pattern, ast_node *l, ast_node *m, ast_node *r)
     res->pattern = pattern;
     res->num = -1;
     memset(res->idn, 0, sizeof(res->idn));
+    if (m)
+    {
+        // the parent node should use children's attribute
+        res->num = m->num;
+        res->type = m->type;
+        res->temp = m->temp;
+        strcpy(res->idn, m->idn);
+    }
     res->l = l;
     res->m = m;
     res->r = r;
@@ -170,11 +180,13 @@ ast_node *create_ast_node_for_IDN(int pattern, char *idn, ast_node *l, ast_node 
     ast_node *res;
     res = (ast_node *)malloc(sizeof(ast_node));
     res->pattern = pattern;
-    res->num = -1;
-    strcpy(res->idn, idn);
+    res->num = m->num;
+    res->type = TYPE_IDN;
+    res->temp = m->temp;
     res->l = l;
     res->m = m;
     res->r = r;
+    strcpy(res->idn, idn);
     return res;
 }
 

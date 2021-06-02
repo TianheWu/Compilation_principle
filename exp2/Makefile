@@ -2,7 +2,7 @@ all: scanner
 	./scanner in.txt out.txt
 
 scanner: parse.tab.c lex.yy.c
-	gcc -o scanner parse.tab.c lex.yy.c -lm
+	gcc -o $@ parse.tab.c lex.yy.c -lm
 
 lex.yy.c: scanner.l
 	flex scanner.l

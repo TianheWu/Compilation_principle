@@ -56,6 +56,7 @@ void backpatch(struct list_node* p, int tac_line);
     double double_val;
     char* str_val;
     struct ast_node* node;
+    char char_val;
 }
 
 
@@ -65,12 +66,11 @@ void backpatch(struct list_node* p, int tac_line);
 %token ELSE
 %token DO
 
+%token <char_val> MARK
 %token <str_val> IDN
-
 %token <int_val> INT8
 %token <int_val> INT10
 %token <int_val> INT16
-
 %token <double_val> REAL8
 %token <double_val> REAL10
 %token <double_val> REAL16
@@ -145,7 +145,7 @@ CP: '>' E       { $$ = create_ast_node(11, NULL, $2, NULL); $$->relop = '>';}
   | '=' error E { yyerrok; }
   ;
 
-E: T            { $$ = create_ast_node(14, NULL, $1, NULL); $$->type = $1 ->type;}
+E: T            { $$ = create_ast_node(14, NULL, $1, NULL); $$->type = $1->type;}
   | E '+' T     { $$ = create_ast_node(15, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'+',$1,$3,0);}
   | E '-' T     { $$ = create_ast_node(16, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'-',$1,$3,0);}
   | E '+' error T { yyerrok; }
@@ -179,7 +179,13 @@ int main(int argc, const char *args[])
 {
     extern FILE *yyin;
 
-	if(argc > 1 && (yyin = fopen(args[1], "r")) == NULL) {
+	if(argc > 1 && (yyin = fopen(args[1], "r")) == NULL) 
+    {
+		fprintf(stderr, "can not open %s\n", args[1]);
+		exit(1);
+	}
+    else if(argc > 1 && (yyin = fopen(args[1], "r")) == NULL) 
+    {
 		fprintf(stderr, "can not open %s\n", args[1]);
 		exit(1);
 	}
@@ -191,6 +197,7 @@ int main(int argc, const char *args[])
     FILE * f;
     f = fopen("out.txt", "w+");
     print_grammar_tree(root, f);
+    print_gen_tac(f);
     return 0;
 }
 
@@ -198,7 +205,6 @@ void yyerror(char *s)
 {
     extern int yylineno;
     extern YYLTYPE yylloc;
-    //extern char yytext [];
     int errflag = 1;
     int start = yylloc.first_column;
     int end = yylloc.last_column;
@@ -212,7 +218,7 @@ void print_gen_tac(FILE* f)
     fprintf(f,"\n");
 
     for(int i = 0; i < next_tac; i++){
-        fprintf(f,"%s\n", gen_str[i]);
+        fprintf(f, "%s\n", gen_str[i]);
     }
 }
 
@@ -238,7 +244,7 @@ void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extr
         else
         {
             allocate_var_name(arg1);
-            sprintf(get_tac_last_pos(),"%c",op);
+            sprintf(get_tac_last_pos(), "%c", op);
             allocate_var_name(arg2);
         }
     }
@@ -260,13 +266,13 @@ void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extr
 void allocate_var_name(ast_node* node) 
 {
     switch(node->type){
-        case TYPE_IDN:
+        case 0:
             sprintf(get_tac_last_pos(), "%s", node->idn);
             break;
-        case TYPE_NUM:
+        case 1:
             sprintf(get_tac_last_pos(), "%g", node->num);
             break;
-        case TYPE_TEMP:
+        case 5:
             sprintf(get_tac_last_pos(), "t%d", node->temp);
             break;
         default:

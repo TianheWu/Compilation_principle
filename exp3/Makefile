@@ -1,5 +1,8 @@
+all: exp_3
+	./exp_3 in.txt out.txt
+
 exp_3: parse.tab.c lex.yy.c
-	gcc -o scanner parse.tab.c lex.yy.c -lm
+	gcc -o $@ parse.tab.c lex.yy.c -lm
 
 lex.yy.c: scanner.l
 	flex scanner.l
