@@ -1,14 +1,14 @@
-struct ast_node
+struct astNode
 {
     int pattern;
     double num;
     char idn[20];
-    struct ast_node *l;
-    struct ast_node *m;
-    struct ast_node *r;
+    struct astNode *l;
+    struct astNode *m;
+    struct astNode *r;
 };
 
-char *print_production(int type)
+char *printProduction(int type)
 {
     char *s;
     s = (char *)malloc(30);
@@ -102,10 +102,10 @@ char *print_production(int type)
     return s;
 }
 
-struct astNode *create_num_node(int pattern, double num)
+struct astNode *createNumNode(int pattern, double num)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    struct astNode *res;
+    res = (struct astNode *)malloc(sizeof(struct astNode));
     res->pattern = pattern;
     res->num = num;
     memset(res->idn, 0, sizeof(res->idn));
@@ -115,10 +115,10 @@ struct astNode *create_num_node(int pattern, double num)
     return res;
 }
 
-struct ast_node *create_IDN_node(int pattern, char *idn)
+struct astNode *createIdnNode(int pattern, char *idn)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    struct astNode *res;
+    res = (struct astNode *)malloc(sizeof(struct astNode));
     res->pattern = pattern;
     strcpy(res->idn, idn);
     res->l = NULL;
@@ -127,10 +127,10 @@ struct ast_node *create_IDN_node(int pattern, char *idn)
     return res;
 }
 
-struct ast_node *create_ast_node(int pattern, struct ast_node *l, struct ast_node *m, struct ast_node *r)
+struct astNode *createAstNode(int pattern, struct astNode *l, struct astNode *m, struct astNode *r)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    struct astNode *res;
+    res = (struct astNode *)malloc(sizeof(struct astNode));
     res->pattern = pattern;
     res->num = -1;
     memset(res->idn, 0, sizeof(res->idn));
@@ -140,10 +140,10 @@ struct ast_node *create_ast_node(int pattern, struct ast_node *l, struct ast_nod
     return res;
 }
 
-struct ast_node *create_ast_node_for_IDN(int pattern, char *idn, struct ast_node *l, struct ast_node *m, struct ast_node *r)
+struct astNode *createAstNodeForIdn(int pattern, char *idn, struct astNode *l, struct astNode *m, struct astNode *r)
 {
-    struct ast_node *res;
-    res = (struct ast_node *)malloc(sizeof(struct ast_node));
+    struct astNode *res;
+    res = (struct astNode *)malloc(sizeof(struct astNode));
     res->pattern = pattern;
     res->num = -1;
     strcpy(res->idn, idn);
@@ -153,13 +153,13 @@ struct ast_node *create_ast_node_for_IDN(int pattern, char *idn, struct ast_node
     return res;
 }
 
-void print_grammar_tree(struct ast_node *node, FILE *file)
+void printGrammarTree(struct astNode *node, FILE *file)
 {
     if (node == NULL)
     {
         return;
     }
-    char *production = print_production(node->pattern);
+    char *production = printProduction(node->pattern);
     fprintf(file, "%s", production);
     if (node->pattern >= 22 && node->pattern <= 24)
         fprintf(file, "%d", (int)node->num);
@@ -170,9 +170,9 @@ void print_grammar_tree(struct ast_node *node, FILE *file)
     fprintf(file, "\n");
 
     if (node->l != NULL)
-        print_grammar_tree(node->l, file);
+        printGrammarTree(node->l, file);
     if (node->m != NULL)
-        print_grammar_tree(node->m, file);
+        printGrammarTree(node->m, file);
     if (node->r != NULL)
-        print_grammar_tree(node->r, file);
+        printGrammarTree(node->r, file);
 }

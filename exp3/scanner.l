@@ -17,36 +17,51 @@ double ahtof(char *p);
         yylloc.first_line = yylloc.last_line = yylineno;            \
         yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
         yycolumn += yyleng;
-#define FUHAO 1
+
+#define _INT10 1
+#define _INT8 2
+#define _INT16 3
+#define _REAL10 4
+#define _REAL8 5
+#define _REAL16 6
+#define _WHILE 7
+#define _IF 8
+#define _ELSE 9
+#define _THEN 10
+#define _DO 11
+#define _IDN 12
+#define _MARK 13
+
 %}
 
-digit	[0-9]
-letter	[A-Za-z]
-hex		[0-9a-f]
-idn		{letter}({letter}|{digit})*([_.]({letter}|{digit})+)?
-int8	0[0-7]+
-int10	0|([1-9]{digit}*)
-int16	0x{hex}+
-float8	0[0-7]+[.][0-7]+
-float10	(0|[1-9]{digit}*)[.]{digit}+
-float16	0x{hex}+[.]{hex}+
-fuhao	[+]|[-]|[*]|[/]|[>]|[<]|[=]|[(]|[)]|[;]|[{]|[}]
+DIGIT	[0-9]
+LETTER	[A-Za-z]
+HEX		[0-9a-f]
+
+IDN		{LETTER}({LETTER}|{DIGIT})*([_.]({LETTER}|{DIGIT})+)?
+INT8	00|0[1-7][0-7]*
+INT10	0|([1-9]{DIGIT}*)
+INT16	(0x|0X){HEX}+
+REAL8	0[0-7]+([.][0-7]+)?
+REAL10	(0|[1-9]{DIGIT}*)([.]{DIGIT}+)?
+REAL16	(0x|0X){HEX}+([.]{HEX}+)?
+MARK	[+]|[-]|[*]|[/]|[>]|[<]|[=]|[(]|[)]|[;]|[{]|[}]
 
 %%
 
-while		{return WHILE;}
-if			{return IF;}
-then		{return THEN;}
-else		{return ELSE;}
-do			{return DO;}
-{fuhao}		{return yytext[0];}
-{idn}		{yylval.strval = strdup(yytext); return IDN;}
-{int10}		{yylval.intval = atoi(yytext); return INT10;}
-{int8}		{yylval.intval = otoi(yytext); return INT8;}
-{int16}		{yylval.intval = htoi(yytext); return INT16;}
-{float10}	{yylval.doubleval = atof(yytext); return FLOAT10;}
-{float8}	{yylval.doubleval = aotof(yytext); return FLOAT8;}
-{float16}	{yylval.doubleval = ahtof(yytext); return FLOAT16;}
+while		{return _WHILE;}
+if			{return _IF;}
+then		{return _THEN;}
+else		{return _ELSE;}
+do			{return _DO;}
+{MARK}		{return _MARK;}
+{IDN}		{yylval.str_val = strdup(yytext); return _IDN;}
+{INT10}	    {yylval.int_val = atoi(yytext); return _INT10;}
+{INT8}		{yylval.int_val = otoi(yytext); return _INT8;}
+{INT16}	    {yylval.int_val = htoi(yytext); return _INT16;}
+{REAL10}	{yylval.double_val = atof(yytext); return _REAL10;}
+{REAL8}	    {yylval.double_val = aotof(yytext); return _REAL8;}
+{REAL16}	{yylval.double_val = ahtof(yytext); return _REAL16;}
 
 .			{;}
 \n          {}
@@ -71,7 +86,7 @@ char* itoa(int num,char *str)
         j = 1;
         ++i;
     }
-    for(;j<i/2;j++) {
+    for(;j < i/2; j++) {
         str[j] = str[j] + str[i-1-j];
         str[i-1-j] = str[j] - str[i-1-j];
         str[j] = str[j] - str[i-1-j];

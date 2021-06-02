@@ -1,3 +1,6 @@
+all: exp_1
+	./exp_1
+
 exp_1 : lex.yy.c
 	gcc -o exp_1 lex.yy.c -lm
 

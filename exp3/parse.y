@@ -5,7 +5,8 @@
 #include <stdarg.h>
 #include "parse.h"
 
-const int MAX_TAC_CNTS = 100;
+#define MAX_TAC_CNTS 100;
+
 const int MAX_TAC_LENGTH = 1000;
 
 // the string currently scanned
@@ -23,7 +24,7 @@ void print_gen_tac(FILE* f);
 void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extra);
 
 // the place to save TAC
-char *gen_str[MAX_TAC_CNTS];
+char *gen_str[100];
 
 // create a new temporary variable for ast_node and set node type to temp
 ast_node* new_temp(ast_node* node);
@@ -49,9 +50,7 @@ void backpatch(struct list_node* p, int tac_line);
 %}
 
 %debug
-
 %locations
-
 %union {
     int int_val;
     double double_val;
@@ -59,7 +58,6 @@ void backpatch(struct list_node* p, int tac_line);
     struct ast_node* node;
 }
 
-%expect 1
 
 %token WHILE
 %token IF
@@ -73,9 +71,9 @@ void backpatch(struct list_node* p, int tac_line);
 %token <int_val> INT10
 %token <int_val> INT16
 
-%token <double_val> FLOAT8
-%token <double_val> FLOAT10
-%token <double_val> FLOAT16
+%token <double_val> REAL8
+%token <double_val> REAL10
+%token <double_val> REAL16
 
 %left '<' '>'
 %left '+' '-'
@@ -100,15 +98,19 @@ S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); g
  | IDN '=' error E      { yyerrok; }
  | IDN error            { yyerrok; }
  | error '=' error      { yyerrok; }
- | IF C THEN LABEL SP       { $$ = create_ast_node(5, $2, NULL, $5); 
-                          backpatch($2->true_list,$4); 
-                          $$->next_list=merge($2->false_list,$5->next_list); 
-                          if($5->type==6)  backpatch($2->false_list,$5->tac_line);}
+ | IF C THEN LABEL SP   { $$ = create_ast_node(5, $2, NULL, $5); 
+                          backpatch($2->true_list, $4); 
+                          $$->next_list=merge($2->false_list, $5->next_list); 
+                          if($5->type==6)  backpatch($2->false_list, $5->tac_line);}
  | IF error C THEN SP    { yyerrok; }
  | IF C error THEN SP    { yyerrok; }
  | IF C THEN error SP    { yyerrok; }
  | IF error THEN SP      { yyerrok; }
- | WHILE LABEL C DO LABEL S         { $$ = create_ast_node(6, $3, NULL, $6); backpatch($6->next_list,$2); backpatch($3->true_list,$5); $$->next_list=merge($$->next_list,$3->false_list); gen_tac(NULL,'9',NULL,NULL,$2);}
+ | WHILE LABEL C DO LABEL S     {   $$ = create_ast_node(6, $3, NULL, $6); 
+                                    backpatch($6->next_list, $2); 
+                                    backpatch($3->true_list, $5); 
+                                    $$->next_list = merge($$->next_list, $3->false_list); 
+                                    gen_tac(NULL,'9',NULL,NULL,$2);}
  | WHILE error LABEL C DO LABEL S       { yyerrok; }
  | WHILE LABEL C error DO LABEL S       { yyerrok; }
  | WHILE LABEL C error DO error LABEL S     { yyerrok; }
@@ -162,9 +164,9 @@ F: '(' E ')'    { $$ = create_ast_node(20, NULL, $2, NULL); }
   | INT8        { $$ = create_num_node(22, $1); }
   | INT10       { $$ = create_num_node(23, $1); }
   | INT16       { $$ = create_num_node(24, $1); }
-  | FLOAT8      { $$ = create_num_node(25, $1); }
-  | FLOAT10     { $$ = create_num_node(26, $1); }
-  | FLOAT16     { $$ = create_num_node(27, $1); }
+  | REAL8       { $$ = create_num_node(25, $1); }
+  | REAL10      { $$ = create_num_node(26, $1); }
+  | REAL16      { $$ = create_num_node(27, $1); }
   | '('E error  { yyerrok; }
   ;
 
