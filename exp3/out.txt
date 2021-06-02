@@ -1,16 +1,4 @@
 P -> LP
-L -> S;a3
-S -> id = E     id = a3
-E -> T
-T -> F
-F -> float16     float16 = 256.312500
-P -> LP
-L -> S;x2
-S -> id = E     id = x2
-E -> T
-T -> F
-F -> float8     float8 = 0.953125
-P -> L
 L -> S;
 S -> while C do S
 C -> EC'
@@ -46,9 +34,6 @@ C' -> < Ez
 E -> Tz
 T -> Fz
 F -> id     id = z
-S -> {P}
-P -> LP
-L -> S;y
 S -> id = E     id = y
 E -> T
 T -> T / F
@@ -69,20 +54,18 @@ F -> id     id = c
 T -> Fd
 F -> id     id = d
 
-100:	a3 := 256.312
-101:	x2 := 0.953125
-102:	t1 := a3+15
-103:	if t1 > 10 goto 105
-104:	goto 117
-105:	if x2 = 7 goto 107
-106:	goto 102
-107:	if y < z goto 109
-108:	goto 102
-109:	t2 := x*y
-110:	t3 := t2/z
-111:	y := t3
+100:	t1 := a3+15
+101:	if t1 > 10 goto 103
+102:	goto 112
+103:	if x2 = 7 goto 105
+104:	goto 100
+105:	if y < z goto 107
+106:	goto 100
+107:	t2 := x*y
+108:	t3 := t2/z
+109:	y := t3
+110:	goto 105
+111:	goto 100
 112:	t4 := b*c
 113:	t5 := t4+d
 114:	c := t5
-115:	goto 107
-116:	goto 102

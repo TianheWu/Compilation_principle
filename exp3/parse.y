@@ -115,11 +115,11 @@ S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); g
  | WHILE LABEL C error DO LABEL S       { yyerrok; }
  | WHILE LABEL C error DO error LABEL S     { yyerrok; }
  | '{' P '}'            { $$ = create_ast_node(7, NULL, $2, NULL); }
- | IF C LABEL SP	{ printf("expected 'then' before '%s' ",yytext); yyerror("missing THEN"); }
- | IF C F	{ printf("expected 'then' before '%s' ",yytext);yyerror("missing THEN"); }
- | WHILE LABEL C LABEL S	{ printf("expected 'do' before '%s' \n",yytext); yyerror("missing DO");}
- | WHILE LABEL C E	{ printf("expected 'do' before '%s' \n",yytext); yyerror("missing DO");}
- | DO	{ printf("WHILE statement not detected before 'do' \n");yyerror("missing WHILE");}
+ | IF C LABEL SP	{ fprintf(stderr, "expected 'then' before '%s' \n", yytext); yyerror("missing THEN"); }
+ | IF C F	{ fprintf(stderr, "expected 'then' before '%s' \n", yytext); yyerror("missing THEN"); }
+ | WHILE LABEL C LABEL S	{ fprintf(stderr, "expected 'do' before '%s' \n", yytext); yyerror("missing DO");}
+ | WHILE LABEL C E	{ fprintf(stderr, "expected 'do' before '%s' \n", yytext); yyerror("missing DO");}
+ | DO	{ fprintf(stderr, "WHILE statement not detected before 'do' \n"); yyerror("missing WHILE");}
  ;
 
 SP: S           { $$ = create_ast_node(8, NULL, $1, NULL); $$->next_list = $1->next_list; $$->true_list = $1->true_list; $$->false_list = $1->false_list;}
@@ -209,7 +209,7 @@ void yyerror(char *s)
     int start = yylloc.first_column;
     int end = yylloc.last_column;
     int i;
-    printf("Unexpected '%s' \n",yytext);
+    fprintf(stderr, "Unexpected '%s' \n",yytext);
     fprintf(stderr, "Error: %s on Line: %d:c%d to %d:c%d\n\n", s, yylineno, start, yylineno, end);
 }
 

@@ -1,0 +1,186 @@
+
+------------------------ test case simple ------------------------
+
+input:
+    while (a3+15)>0xa do if x2 = 07 then while y<z do y = x * y / z; c=b*c+d;
+
+expected output:
+    100:	t1 := a3+15
+    101:	if t1 > 10 goto 103
+    102:	goto 112
+    103:	if x2 = 7 goto 105
+    104:	goto 100
+    105:	if y < z goto 107
+    106:	goto 100
+    107:	t2 := x*y
+    108:	t3 := t2/z
+    109:	y := t3
+    110:	goto 105
+    111:	goto 100
+    112:	t4 := b*c
+    113:	t5 := t4+d
+    114:	c := t5
+
+------------------------ test case 0 ------------------------
+
+input: 
+    i = 0;
+    while i < 20 do {
+        x = 4 * i; i=i+1;
+        y = z * 6 + x;
+    };
+
+expected output:
+    100:	i := 0
+    101:	if i < 20 goto 103
+    102:	goto 111
+    103:	t1 := 4*i
+    104:	x := t1
+    105:	t2 := i+1
+    106:	i := t2
+    107:	t3 := z*6
+    108:	t4 := t3+x
+    109:	y := t4
+    110:	goto 101
+
+------------------------ test case 1 ------------------------
+
+input:
+    a3 = 0x100.5;
+    x2 = 00.75;
+    while (a3+15)>0xa do
+        if x2 = 07 then 
+            while y<z do{
+                y = x * y / z;
+                c=b*c+d;
+            };
+
+expected output:
+    100:	a3 := 256.312
+    101:	x2 := 0.953125
+    102:	t1 := a3+15
+    103:	if t1 > 10 goto 105
+    104:	goto 117
+    105:	if x2 = 7 goto 107
+    106:	goto 102
+    107:	if y < z goto 109
+    108:	goto 102
+    109:	t2 := x*y
+    110:	t3 := t2/z
+    111:	y := t3
+    112:	t4 := b*c
+    113:	t5 := t4+d
+    114:	c := t5
+    115:	goto 107
+    116:	goto 102
+
+------------------------ test case 2 ------------------------
+
+input:
+    if a = 07 then if a < b then a = 0xaa;
+    b = b / c;if a < b then while a < 3 do a = a + 1;
+
+expected output:
+    100:	if a = 7 goto 102
+    101:	goto 105
+    102:	if a < b goto 104
+    103:	goto 105
+    104:	a := 170
+    105:	t1 := b/c
+    106:	b := t1
+    107:	if a < b goto 109
+    108:	goto 114
+    109:	if a < 3 goto 111
+    110:	goto 114
+    111:	t2 := a+1
+    112:	a := t2
+    113:	goto 109
+
+------------------------ test case 3 ------------------------
+
+input:
+    a=b=c;
+
+expected output:
+    Unexpected '='
+    Error: syntax error on Line: 1:c4 to 1:c4
+
+------------------------ test case 4 ------------------------
+
+input:
+    while a=b c=d;
+
+expected output:
+    expected 'do' before ';'
+    Unexpected ';'
+    Error: missing DO on Line: 1:c14 to 1:c14
+
+------------------------ test case 5 ------------------------
+
+input:
+    if a=b c=d;
+
+expected output:
+    expected 'then' before ';'
+    Unexpected ';'
+    Error: missing THEN on Line : 1:c11 to 1:c11
+
+------------------------ test case 6 ------------------------
+
+input:
+    while a=b do c=(11+d ;
+
+expected output:
+    Unexpected ';'
+    Error: Missing ')' on Line: 1:c22 to 1:c22
+
+------------------------ test case 7 ------------------------
+
+input:
+    while a=b do 1;
+
+expected output:
+    Warning: 'do 1;' seems meaningless
+
+------------------------ test case 8 ------------------------
+
+input:
+    a=10; do b=a;
+
+expected output:
+    WHILE statement not detected before 'do'
+    Unexpected 'do'
+    Error: missing WHILE on Line: 1:c7 to 1:c8
+    Unexpected 'b'
+    Error: syntax error on Line: 1:c10 to 1:c10
+
+------------------------ test case 9 ------------------------
+
+input:
+    while a=b c=d; e=f=g;
+
+enpected output:
+    expected 'do' before ';'
+    Unexpected ';'
+    Error: missing DO on Line: 1:c14 to 1:c14
+    Unexpected '='
+    Error: syntax error on Line: 1:c19 to 1:c19
+
+------------------------ test case 10 ------------------------
+
+input:
+    while a=b c=d;
+    if a=1 b=2;
+    e=f=g;
+
+expected ouout：
+    expected 'do' before ';'
+    Unexpected ';'
+    Error: missing DO on Line: 1:c14 to 1:c14
+
+    expected 'then' before ';'
+    Unexpected ';'
+    Error: missing THEN on Line: 2:c27 to 2:c27
+
+    Unexpected '='
+    Error: syntax error on Line: 3:c33 to 3:c33

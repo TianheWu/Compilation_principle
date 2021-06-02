@@ -11,4 +11,4 @@ parse.tab.c parse.tab.h: parse.y parse.h
 	bison -vd parse.y
 
 clean:
-	rm -f parse.tab.c parse.tab.h parse.output scanner lex.yy.c
+	rm -f parse.tab.c parse.tab.h parse.output lex.yy.c exp_3
