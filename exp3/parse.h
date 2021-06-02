@@ -13,6 +13,7 @@ typedef struct ast_node
     double num;
     char idn[20];
     int temp;
+    int tac_line;
 
     struct ast_node *l;
     struct ast_node *m;
@@ -32,11 +33,11 @@ typedef struct ast_node
 
 } ast_node;
 
-char *print_product(int product_idx)
+char *print_product(int pattern)
 {
     char *s;
     s = (char *)malloc(30);
-    switch (product_idx)
+    switch (pattern)
     {
     case 1:
         strcpy(s, "P -> L");

@@ -13,16 +13,17 @@ extern char *yytext;
 
 void yyerror(char *s);
 int yylex();
+
 ast_node *root;
 
 
-void print_get_tac_last_pos_code(FILE* f);
+void print_gen_tac(FILE* f);
 
-// get_tac_last_pos_tac() is a function to get_tac_last_poserate the TAC code and storage it to get_tac_last_pos_str[next_tac], then next_tac plus.
-void get_tac_last_pos_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extra);
+// gen_tac() is a function to generate the TAC code and storage it to gen_str[next_tac], then next_tac plus.
+void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extra);
 
 // the place to save TAC
-char *get_tac_last_pos_str[MAX_TAC_CNTS];
+char *gen_str[MAX_TAC_CNTS];
 
 // create a new temporary variable for ast_node and set node type to temp
 ast_node* new_temp(ast_node* node);
@@ -43,7 +44,7 @@ char* get_tac_last_pos();
 int temp_cnts = 0;
 
 // backpatch all lines in list
-void backpatch(struct list_node* p, int quad);
+void backpatch(struct list_node* p, int tac_line);
 
 %}
 
@@ -91,23 +92,23 @@ P: L            { $$ = create_ast_node(1, NULL, $1, NULL); root = $$;}
  | L P          { $$ = create_ast_node(2, $1, NULL, $2); root = $$;}
  ;
 
-L: S ';' LABEL       { $$ = create_ast_node(3, NULL, $1, NULL); backpatch($1->nextlist,$3);}
+L: S ';' LABEL       { $$ = create_ast_node(3, NULL, $1, NULL); backpatch($1->next_list, $3);}
  ;
 
-S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); get_tac_last_pos_tac($$,'=',$3,NULL,0);}
+S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); gen_tac($$, '=', $3, NULL, 0);}
  | IDN error '=' E      { yyerrok; }
  | IDN '=' error E      { yyerrok; }
  | IDN error            { yyerrok; }
  | error '=' error      { yyerrok; }
  | IF C THEN LABEL SP       { $$ = create_ast_node(5, $2, NULL, $5); 
-                          backpatch($2->truelist,$4); 
-                          $$->nextlist=merge($2->falselist,$5->nextlist); 
-                          if($5->type==6)  backpatch($2->falselist,$5->quad);}
+                          backpatch($2->true_list,$4); 
+                          $$->next_list=merge($2->false_list,$5->next_list); 
+                          if($5->type==6)  backpatch($2->false_list,$5->tac_line);}
  | IF error C THEN SP    { yyerrok; }
  | IF C error THEN SP    { yyerrok; }
  | IF C THEN error SP    { yyerrok; }
  | IF error THEN SP      { yyerrok; }
- | WHILE LABEL C DO LABEL S         { $$ = create_ast_node(6, $3, NULL, $6); backpatch($6->nextlist,$2); backpatch($3->truelist,$5); $$->nextlist=merge($$->nextlist,$3->falselist); get_tac_last_pos(NULL,'9',NULL,NULL,$2);}
+ | WHILE LABEL C DO LABEL S         { $$ = create_ast_node(6, $3, NULL, $6); backpatch($6->next_list,$2); backpatch($3->true_list,$5); $$->next_list=merge($$->next_list,$3->false_list); gen_tac(NULL,'9',NULL,NULL,$2);}
  | WHILE error LABEL C DO LABEL S       { yyerrok; }
  | WHILE LABEL C error DO LABEL S       { yyerrok; }
  | WHILE LABEL C error DO error LABEL S     { yyerrok; }
@@ -117,42 +118,41 @@ S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); g
  | WHILE LABEL C LABEL S	{ printf("expected 'do' before '%s' \n",yytext); yyerror("missing DO");}
  | WHILE LABEL C E	{ printf("expected 'do' before '%s' \n",yytext); yyerror("missing DO");}
  | DO	{ printf("WHILE statement not detected before 'do' \n");yyerror("missing WHILE");}
- 
  ;
 
-SP: S           { $$ = create_ast_node(8, NULL, $1, NULL); $$->nextlist=$1->nextlist;$$->truelist=$1->truelist;$$->falselist=$1->falselist;}
-  | S LABEL ELSE LABEL S    { $$ = create_ast_node(9, $1, NULL, $5); get_tac_last_pos_tac(NULL,'0',NULL,NULL,9); $$->nextlist=merge(makelist($2),$5->nextlist); $$->quad=$4; $$->type=6; }
+SP: S           { $$ = create_ast_node(8, NULL, $1, NULL); $$->next_list = $1->next_list; $$->true_list = $1->true_list; $$->false_list = $1->false_list;}
+  | S LABEL ELSE LABEL S    { $$ = create_ast_node(9, $1, NULL, $5); gen_tac(NULL,'0',NULL,NULL,9); $$->next_list = merge(makelist($2), $5->next_list); $$->tac_line = $4; $$->type=6; }
   ;
 
-C: E CP         { $$ = create_ast_node(10, $1, NULL, $2); 
-                  $$ -> truelist = makelist(nextquad); 
-                  $$ -> falselist = makelist(nextquad+1);
-                  get_tac_last_pos_tac(NULL,$2->relop,$1,$2,1); 
-                  get_tac_last_pos_tac(NULL,'0',NULL,NULL,9); }
-
+C: E CP     {   $$ = create_ast_node(10, $1, NULL, $2); 
+                $$->true_list = makelist(next_tac); 
+                $$->false_list = makelist(next_tac + 1);
+                gen_tac(NULL,$2->relop,$1,$2,1); 
+                gen_tac(NULL,'0',NULL,NULL,9); 
+            }
+            
  | E error CP   { yyerrok; }
  | error CP     { yyerrok; }
-  
  ;
 
-CP: '>' E       { $$ = create_ast_node(11, NULL, $2, NULL); $$ -> relop = '>';}
-  | '<' E       { $$ = create_ast_node(12, NULL, $2, NULL); $$ -> relop = '<';}
-  | '=' E       { $$ = create_ast_node(13, NULL, $2, NULL); $$ -> relop = '=';}
+CP: '>' E       { $$ = create_ast_node(11, NULL, $2, NULL); $$->relop = '>';}
+  | '<' E       { $$ = create_ast_node(12, NULL, $2, NULL); $$->relop = '<';}
+  | '=' E       { $$ = create_ast_node(13, NULL, $2, NULL); $$->relop = '=';}
   | '>' error E { yyerrok; }
   | '<' error E { yyerrok; }
   | '=' error E { yyerrok; }
   ;
 
-E: T            { $$ = create_ast_node(14, NULL, $1, NULL); $$ -> type = $1 ->type;}
-  | E '+' T     { $$ = create_ast_node(15, $1, NULL, $3);  $$ = new_temp($$); get_tac_last_pos_tac($$,'+',$1,$3,0);}
-  | E '-' T     { $$ = create_ast_node(16, $1, NULL, $3);  $$ = new_temp($$); get_tac_last_pos_tac($$,'-',$1,$3,0);}
+E: T            { $$ = create_ast_node(14, NULL, $1, NULL); $$->type = $1 ->type;}
+  | E '+' T     { $$ = create_ast_node(15, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'+',$1,$3,0);}
+  | E '-' T     { $$ = create_ast_node(16, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'-',$1,$3,0);}
   | E '+' error T { yyerrok; }
   | E '-' error T { yyerrok; }
   ;
 
-T: F            { $$ = create_ast_node(17, NULL, $1, NULL); $$ -> type = $1 ->type;}
-  | T '*' F     { $$ = create_ast_node(18, $1, NULL, $3);  $$ = new_temp($$); get_tac_last_pos_tac($$,'*',$1,$3,0);}
-  | T '/' F     { $$ = create_ast_node(19, $1, NULL, $3);  $$ = new_temp($$); get_tac_last_pos_tac($$,'/',$1,$3,0);}
+T: F            { $$ = create_ast_node(17, NULL, $1, NULL); $$->type = $1 ->type;}
+  | T '*' F     { $$ = create_ast_node(18, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'*',$1,$3,0);}
+  | T '/' F     { $$ = create_ast_node(19, $1, NULL, $3);  $$ = new_temp($$); gen_tac($$,'/',$1,$3,0);}
   | T '*' error F { yyerrok; }
   | T '/' error F { yyerrok; }
   ;
@@ -205,30 +205,30 @@ void yyerror(char *s)
     fprintf(stderr, "Error: %s on Line: %d:c%d to %d:c%d\n\n", s, yylineno, start, yylineno, end);
 }
 
-void print_get_tac_last_pos_code(FILE* f) 
+void print_gen_tac(FILE* f) 
 {
     fprintf(f,"\n");
 
     for(int i = 0; i < next_tac; i++){
-        fprintf(f,"%s\n", get_tac_last_pos_str[i]);
+        fprintf(f,"%s\n", gen_str[i]);
     }
 }
 
-void get_tac_last_pos_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extra) 
+void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extra) 
 {
 
-    get_tac_last_pos_str[next_tac] = (char *)malloc(sizeof(char) * MAX_TAC_LENGTH);
+    gen_str[next_tac] = (char *)malloc(sizeof(char) * MAX_TAC_LENGTH);
 
-    sprintf(get_tac_last_pos,"%d:\t", next_tac + start_tac);
+    sprintf(get_tac_last_pos(),"%d:\t", next_tac + start_tac);
 
     if(op == '9')
     {
-        sprintf(get_tac_last_pos,"goto %d", extra + start_tac);
+        sprintf(get_tac_last_pos(),"goto %d", extra + start_tac);
     }
     else if(extra == 0)
     {
         allocate_var_name(result);
-        sprintf(get_tac_last_pos, " := ");
+        sprintf(get_tac_last_pos(), " := ");
         if(op == '=')
         {
             allocate_var_name(arg1);
@@ -236,36 +236,36 @@ void get_tac_last_pos_tac(ast_node* result, char op, ast_node* arg1, ast_node* a
         else
         {
             allocate_var_name(arg1);
-            sprintf(get_tac_last_pos,"%c",op);
+            sprintf(get_tac_last_pos(),"%c",op);
             allocate_var_name(arg2);
         }
     }
     else if(extra == 1)
     {
-        sprintf(get_tac_last_pos, "if ");
+        sprintf(get_tac_last_pos(), "if ");
         allocate_var_name(arg1);
-        sprintf(get_tac_last_pos, " %c ", op);
+        sprintf(get_tac_last_pos(), " %c ", op);
         allocate_var_name(arg2);
-        sprintf(get_tac_last_pos, " goto ");
+        sprintf(get_tac_last_pos(), " goto ");
     }
     else if(extra == 9)
     {
-        sprintf(get_tac_last_pos,"goto ");
+        sprintf(get_tac_last_pos(),"goto ");
     }
     next_tac++;
 }
 
 void allocate_var_name(ast_node* node) 
 {
-    switch(node -> type){
+    switch(node->type){
         case TYPE_IDN:
-            sprintf(get_tac_last_pos, "%s", node -> idn);
+            sprintf(get_tac_last_pos(), "%s", node->idn);
             break;
         case TYPE_NUM:
-            sprintf(get_tac_last_pos, "%g", node -> num);
+            sprintf(get_tac_last_pos(), "%g", node->num);
             break;
         case TYPE_TEMP:
-            sprintf(get_tac_last_pos, "t%d", node -> temp);
+            sprintf(get_tac_last_pos(), "t%d", node->temp);
             break;
         default:
             break;
@@ -274,19 +274,19 @@ void allocate_var_name(ast_node* node)
 
 char* get_tac_last_pos() 
 {
-    return get_tac_last_pos_str[next_tac] + strlen(get_tac_last_pos_str[next_tac]);
+    return gen_str[next_tac] + strlen(gen_str[next_tac]);
 }
 
-void backpatch(list_node* p, int quad){
+void backpatch(list_node* p, int tac_line){
     while(p){
-        sprintf(gen_str[p->quad]+strlen(gen_str[p->quad]),"%d",quad+startquad);
-        p=p->next;
+        sprintf(gen_str[p->tac_index] + strlen(gen_str[p->tac_index]), "%d", tac_line + start_tac);
+        p = p->next;
     }
 }
 
-ast_node* newtemp(ast_node* node){
+ast_node* new_temp(ast_node* node){
   temp_cnts++;
-  node -> temp = temp_cnts;
-  node -> type = TYPE_TEMP;
+  node->temp = temp_cnts;
+  node->type = TYPE_TEMP;
   return node;
 }
