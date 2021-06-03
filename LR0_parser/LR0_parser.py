@@ -264,9 +264,9 @@ while True:
     try:
         try:
             productions = dfa[stack[-1]]
-            productionsNumber = productions[string[i]]
+            productions_number = productions[string[i]]
         except Exception:
-            productionsNumber = None
+            productions_number = None
 
         try:
             tab = parsing_table_dict[stack[-1]]
@@ -285,7 +285,7 @@ while True:
                 lst = ['Action({0}, {1}) = {2}'.format(
                     stack[-1], string[i], tabCheck), i, string[i]]
                 stack.append(string[i])
-                stack.append(productionsNumber)
+                stack.append(productions_number)
                 lst.append(str(stack))
                 data.append(lst)
                 i += 1

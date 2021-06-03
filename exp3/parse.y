@@ -101,7 +101,7 @@ S: IDN '=' E            { $$ = create_ast_node_for_IDN(4, $1, NULL, $3, NULL); g
  | IF C THEN LABEL SP   { $$ = create_ast_node(5, $2, NULL, $5); 
                           backpatch($2->true_list, $4); 
                           $$->next_list=merge($2->false_list, $5->next_list); 
-                          if($5->type==6)  backpatch($2->false_list, $5->tac_line);}
+                          if($5->type==TYPE_TAC)  backpatch($2->false_list, $5->tac_line);}
  | IF error C THEN SP    { yyerrok; }
  | IF C error THEN SP    { yyerrok; }
  | IF C THEN error SP    { yyerrok; }
@@ -229,6 +229,7 @@ void gen_tac(ast_node* result, char op, ast_node* arg1, ast_node* arg2, int extr
 
     sprintf(get_tac_last_pos(),"%d:\t", next_tac + start_tac);
 
+    // '9' is while 
     if(op == '9')
     {
         sprintf(get_tac_last_pos(),"goto %d", extra + start_tac);
