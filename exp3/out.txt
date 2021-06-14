@@ -1,58 +1,71 @@
 P -> LP
-L -> S;i
-S -> id = E     id = i
-E -> T
-T -> F
-F -> int10     int10 = 0
-P -> L
 L -> S;
 S -> while C do S
 C -> EC'
-E -> Ti
-T -> Fi
-F -> id     id = i
-C' -> < E
 E -> T
 T -> F
-F -> int10     int10 = 20
-S -> {P}
-P -> LP
-L -> S;x
-S -> id = E     id = x
-E -> T
-T -> T * F
-T -> F
-F -> int10     int10 = 4
-F -> id     id = i
-P -> LP
-L -> S;i
-S -> id = E     id = i
+F -> ( E )
 E -> E + T
-E -> Ti
-T -> Fi
-F -> id     id = i
+E -> Ta3
+T -> Fa3
+F -> id     id = a3
 T -> F
-F -> int10     int10 = 1
-P -> Ly
-L -> S;y
-S -> id = E     id = y
-E -> E + T
+F -> int10     int10 = 15
+C' -> > E
 E -> T
-T -> T * F
+T -> F
+F -> int16     int16 = 10
+S -> if C then S'
+C -> EC'
+E -> Tx2
+T -> Fx2
+F -> id     id = x2
+C' -> = E
+E -> T
+T -> F
+F -> int8     int8 = 7
+S' -> S
+S -> while C do S
+C -> EC'
+E -> Ty
+T -> Fy
+F -> id     id = y
+C' -> < Ez
+E -> Tz
 T -> Fz
 F -> id     id = z
-F -> int10     int10 = 6
+S -> id = E     id = y
+E -> T
+T -> T / F
+T -> T * F
 T -> Fx
 F -> id     id = x
+F -> id     id = y
+F -> id     id = z
+P -> Lc
+L -> S;c
+S -> id = E     id = c
+E -> E + T
+E -> T
+T -> T * F
+T -> Fb
+F -> id     id = b
+F -> id     id = c
+T -> Fd
+F -> id     id = d
 
-100:	i := 0
-101:	if i < 20 goto 103
-102:	goto 111
-103:	t1 := 4*i
-104:	x := t1
-105:	t2 := i+1
-106:	i := t2
-107:	t3 := z*6
-108:	t4 := t3+x
-109:	y := t4
-110:	goto 101
+100:	t1 := a3+15
+101:	if t1 > 10 goto 103
+102:	goto 112
+103:	if x2 = 7 goto 105
+104:	goto 100
+105:	if y < z goto 107
+106:	goto 100
+107:	t2 := x*y
+108:	t3 := t2/z
+109:	y := t3
+110:	goto 105
+111:	goto 100
+112:	t4 := b*c
+113:	t5 := t4+d
+114:	c := t5
